@@ -9,7 +9,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecipeTest {
-    private Recipe cupcakeRecipe;
     private Ingredient flour;
     private Supplier flourSupplier;
 
@@ -20,8 +19,6 @@ class RecipeTest {
     @BeforeEach
     void setUp() {
         // Given -- init
-        cupcakeRecipe = new Recipe("Cupcake", 12);
-
         flour = new Ingredient("Flour");
         flourSupplier = new Supplier("GoodSupplier", new BigDecimal("1.50"), 500, "grams");
 
@@ -33,6 +30,9 @@ class RecipeTest {
 
     @Test
     void addIngredientTest() {
+        // Given - init
+        Recipe cupcakeRecipe = new Recipe("Cupcake", 12);
+
         // When - operation
         flour.addSupplier(flourSupplier);
         sugar.addSupplier(sugarSupplier);
@@ -50,7 +50,33 @@ class RecipeTest {
 
     @Test
     void addSubRecipeTest() {
+        // Given - init
+        Ingredient milk = new Ingredient("Milk");
+        Supplier milkSupplier = new Supplier("GoodSupplier", new BigDecimal("2.00"), 25, "ml");
 
+        Ingredient vanillaExtract = new Ingredient("Vanilla extract");
+        Supplier vanillaExtractSupplier = new Supplier("GoodSupplier", new BigDecimal("38.68"), 5, "ml");
+
+        Recipe cakeRecipe = new Recipe("Cake " , 1);
+        Recipe icingRecipe = new Recipe("Icing" , 1);
+
+        // When - operation
+        sugar.addSupplier(sugarSupplier);
+        //flour.addSupplier(flourSupplier);
+        milk.addSupplier(milkSupplier);
+        vanillaExtract.addSupplier(vanillaExtractSupplier);
+
+        icingRecipe.addIngredient(sugar , 150);
+        icingRecipe.addIngredient(milk , 50);
+        icingRecipe.addIngredient(vanillaExtract , 2);
+        //icingRecipe.addIngredient(flour , 100);
+
+        cakeRecipe.addSubRecipe(icingRecipe , 1);
+
+        // Then - result
+        assertEquals(1 , cakeRecipe.getSubRecipes().size());
+        // Check if the sub-recipe exists in the subRecipes map
+        assertTrue(cakeRecipe.getSubRecipes().containsKey(icingRecipe));
     }
 
     @Test
