@@ -81,6 +81,23 @@ class RecipeTest {
 
     @Test
     void calculateIngredientAmounts() {
+        // Given - init
+        Recipe cupcakeRecipe = new Recipe("Cupcake", 12);
+
+        // When - operation
+        flour.addSupplier(flourSupplier);
+        sugar.addSupplier(sugarSupplier);
+
+        cupcakeRecipe.addIngredient(flour, 200);
+        cupcakeRecipe.addIngredient(sugar, 150);
+
+        Map<Ingredient, Double> ingredientAmounts = cupcakeRecipe.calculateIngredientAmounts(2);
+
+        // Then - result
+        // 200 * 2
+        assertEquals(400, ingredientAmounts.get(flour));
+        // 150 * 2
+        assertEquals(300, ingredientAmounts.get(sugar));
     }
 
     @Test
