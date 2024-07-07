@@ -1,15 +1,26 @@
 package com.example.demo;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Recipe {
     private String name;
-    private Map<Ingredient , Double> ingredient;
+    private Map<Ingredient , Double> ingredients;
     private Map<Recipe , Double> subRecipes;
     private int output;
 
-    public void addIngredient(Ingredient ingredient , double quantity) {}
+    public Recipe(String name, int output) {
+        this.name = name;
+        this.output = output;
+        this.ingredients = new HashMap<>(); // Initialize the ingredients map
+        this.subRecipes = new HashMap<>(); // Initialize the subRecipes map
+    }
+
+    // Put ingredient and quantity into HashMap call ingredients
+    public void addIngredient(Ingredient ingredient , double quantity) {
+        ingredients.put(ingredient , quantity);
+    }
 
     public void addSubRecipe(Recipe recipe , double quantity) {}
 
@@ -34,13 +45,14 @@ public class Recipe {
         this.name = name;
     }
 
-    public Map<Ingredient, Double> getIngredient() {
-        return ingredient;
+
+    public Map<Ingredient, Double> getIngredients() {
+        return ingredients;
     }
 
-    public void setIngredient(Map<Ingredient, Double> ingredient) {
-        this.ingredient = ingredient;
-    }
+//    public void setIngredient(Map<Ingredient, Double> ingredient) {
+//        this.ingredient = ingredient;
+//    }
 
     public Map<Recipe, Double> getSubRecipes() {
         return subRecipes;
@@ -58,10 +70,4 @@ public class Recipe {
         this.output = output;
     }
 
-    public Recipe(String name, Map<Ingredient, Double> ingredient, Map<Recipe, Double> subRecipes, int output) {
-        this.name = name;
-        this.ingredient = ingredient;
-        this.subRecipes = subRecipes;
-        this.output = output;
-    }
 }

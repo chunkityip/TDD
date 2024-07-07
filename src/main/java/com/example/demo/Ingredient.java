@@ -7,6 +7,7 @@ public class Ingredient {
     private String name;
     private List<Supplier> supplier;
 
+
     public Ingredient(String name) {
         // Part 1 US1:
         // As a baker, I should be able to add ingredients to the system
