@@ -20,10 +20,10 @@ class RecipeTest {
     void setUp() {
         // Given -- init
         flour = new Ingredient("Flour");
-        flourSupplier = new Supplier("GoodSupplier", new BigDecimal("1.50"), 500, "grams");
+        flour.addSupplier(new Supplier("BestSupplier", new BigDecimal("1.40"), 500, "grams"));
 
         sugar = new Ingredient("Sugar");
-        sugarSupplier = new Supplier("BestSupplier", new BigDecimal("2.50"), 1000, "grams");
+        sugar.addSupplier(new Supplier("BestSupplier", new BigDecimal("2.30"), 1000, "grams"));
 
     }
 
@@ -80,7 +80,7 @@ class RecipeTest {
     }
 
     @Test
-    void calculateIngredientAmounts() {
+    void calculateIngredientAmountsTest() {
         // Given - init
         Recipe cupcakeRecipe = new Recipe("Cupcake", 12);
 
@@ -102,5 +102,52 @@ class RecipeTest {
 
     @Test
     void calculateCostPerUnit() {
+        // Given - init
+        Recipe cupcakeRecipe = new Recipe("Cupcake", 12);
+
+        // Since we already have BestSupplier for both Flour and Sugar,
+        // We just need to init above two to compare the price
+        flour.addSupplier(new Supplier("AnotherSupplier", new BigDecimal("1.50"), 500, "grams"));
+        sugar.addSupplier(new Supplier("AnotherSupplier", new BigDecimal("2.50"), 1000, "grams"));
+
+
+        cupcakeRecipe.addIngredient(flour, 200);
+        cupcakeRecipe.addIngredient(sugar, 150);
+
+        BigDecimal costPerUnit = cupcakeRecipe.calculateCostPerUnit();
+
+        assertEquals(new BigDecimal("0.0754"), costPerUnit);
+
+        // After ingredient.getCheapestSupplier() , we got:
+        /*
+            Flour:
+            Cheapest Supplier: "BestSupplier"
+            Price: $1.40
+            Quantity: 500 grams
+         */
+
+        /*
+             Sugar:
+             Cheapest Supplier: "BestSupplier"
+             Price: $2.30
+             Quantity: 1000 grams
+         */
+
+        /*
+        Since we need 12 cupcakes, so we need:
+            200 grams Flour
+            500 grams Sugar
+
+        Flour per unit: 1.40 / 500 = 0.0028
+        Sugar per unit: 2.30 / 1000 = 0.0023
+
+        Then we need to multiply the price per unit:
+        Cost of Flour: 200 grams * 0.0028 = 0.5600
+        Cost of Sugar: 150 grams * 0.0023 = 0.3450
+
+        Total cost for 12 cupcakes: 0.56 + 0.345 = 0.9050
+        Cost per unit: 0.9050 / 12 = 0.0754
+         */
+
     }
 }

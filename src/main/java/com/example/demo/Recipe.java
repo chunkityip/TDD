@@ -40,8 +40,9 @@ public class Recipe {
         return null;
     }
 
-    // Part 2 US4:
+    // Part 2 US4 amd US5
     // As a baker, I should be able to calculate the amount of each ingredient
+    // As a baker, I should be able to calculate the amount of each ingredient I would need to purchase
 
     // Using Map.entry to have direct access to both the key and the value to iterate over the entries
 
@@ -81,8 +82,8 @@ public class Recipe {
         }
     }
 
-
-
+    // This method is getting recipe key and value multiple multiplier
+    // and then put into new HashMap call subAmounts by using combineIngredientAmounts()
     private void addSubRecipeIngredients(Map<Ingredient, Double> amounts, int multiplier) {
         for (Map.Entry<Recipe , Double> entry : subRecipes.entrySet()) {
             Recipe subRecipeKey = entry.getKey();
@@ -102,20 +103,62 @@ public class Recipe {
     }
 
 
+    // Part 2 US6:
+    // As a baker, I should be able to calculate how much each unit of the product
+    /*
+    // Suppose the cheapest supplier offers 500 grams of flour for $1.50. Here’s how the calculation works:
+
+    //      Total price: $1.50
+    //      Quantity: 500 grams
+    //      To find the price per gram:
+
+    // Convert the quantity to BigDecimal: BigDecimal.valueOf(500)
+    // Divide the total price by the quantity
+    // The result will be 0.003 (the price per gram)
+
+     */
+
     public BigDecimal calculateCostPerUnit() {
         BigDecimal totalCost = BigDecimal.ZERO;
+        int scale = 4; // Adjust scale for precision if needed
+
+        // Calculate the cost of each ingredient
         for (Map.Entry<Ingredient, Double> entry : ingredients.entrySet()) {
             Ingredient ingredient = entry.getKey();
             double amount = entry.getValue();
-            totalCost = totalCost.add(ingredient.getPrice().multiply(BigDecimal.valueOf(amount / ingredient.getQuantity())));
+
+            // Since the baker needs to ensure the profitability of the enterprise , we should compare the price
+            // by using ingredient.getCheapestSupplier()
+            Supplier cheapestSupplier = ingredient.getCheapestSupplier();
+
+            if (cheapestSupplier != null) {
+
+                // Using BigDecimal.valueOf() to change to double
+                // BigDecimal.ROUND_HALF_UP: if the result of the division is halfway between two possible results, it will round up to the nearest whole number. For example, 2.5 would be rounded to 3
+                BigDecimal pricePerUnit = cheapestSupplier
+                        .getPrice()
+                        .divide(BigDecimal
+                                .valueOf(cheapestSupplier.getQuantity()), scale, BigDecimal.ROUND_HALF_UP);
+
+                BigDecimal ingredientCost = pricePerUnit
+                        .multiply(BigDecimal.valueOf(amount))
+                        .setScale(scale, BigDecimal.ROUND_HALF_UP); // Ensure proper rounding here
+
+                // To ensure the result of unit test is correct
+                System.out.println("Ingredient: " + ingredient.getName() + ", Amount: " + amount
+                        + ", Price per unit: " + pricePerUnit + ", Ingredient cost: " + ingredientCost
+                + " Supplier name :" + cheapestSupplier.getName());
+
+                totalCost = totalCost.add(ingredientCost);
+            }
         }
-        for (Map.Entry<Recipe, Double> entry : subRecipes.entrySet()) {
-            Recipe subRecipe = entry.getKey();
-            double subRecipeQuantity = entry.getValue();
-            totalCost = totalCost.add(subRecipe.calculateCostPerUnit().multiply(BigDecimal.valueOf(subRecipeQuantity)));
-        }
-        return totalCost.divide(BigDecimal.valueOf(output), BigDecimal.ROUND_HALF_UP);
+
+        System.out.println("Total Cost before division: " + totalCost);
+        BigDecimal costPerUnit = totalCost.divide(BigDecimal.valueOf(output), scale, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Total Cost per unit: " + costPerUnit);
+        return costPerUnit.setScale(scale, BigDecimal.ROUND_HALF_UP); // Ensure a final result is properly rounded
     }
+
 
 
     public String getName() {
